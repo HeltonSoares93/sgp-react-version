@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import BarraNav from "./componentes/BarraNav"
 import Usuarios from "./componentes/Usuarios"
 import Projetos from "./componentes/Projetos"
+import Tarefas from "./componentes/Tarefas"
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <Routes>
             <Route path="/usuarios" element={<Usuarios />} />
             <Route path="/projetos" element={<Projetos />} />
+            <Route path="/tarefas" element={<Tarefas />} />
           </Routes>
 
         </Container>
