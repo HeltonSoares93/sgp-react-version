@@ -23,7 +23,7 @@ export default function Tarefas() {
             </span>
             Painel de Tarefas
           </h2>
-          <Button variant="secondary" className="d-flex align-items-center gap-2" onClick={handleShow}>
+          <Button variant="dark" className="d-flex align-items-center gap-2" onClick={handleShow}>
             <i class="bi bi-plus-lg"></i> <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
               fill="currentColor" class="bi bi-clipboard2-fill" viewBox="0 0 16 16">
               <path
