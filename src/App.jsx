@@ -4,6 +4,7 @@ import BarraNav from "./componentes/BarraNav"
 import Usuarios from "./componentes/Usuarios"
 import Projetos from "./componentes/Projetos"
 import Tarefas from "./componentes/Tarefas"
+// import PaginaInicial from "./componentes/PaginaInicial"
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
             <Route path="/usuarios" element={<Usuarios />} />
             <Route path="/projetos" element={<Projetos />} />
             <Route path="/tarefas" element={<Tarefas />} />
+            {/* <Route path="/paginainicial" element={<PaginaInicial />} /> */}
           </Routes>
 
         </Container>

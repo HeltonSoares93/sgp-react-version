@@ -1,6 +1,7 @@
 import { Container, Card, Button, Col, Form, Row, Table } from "react-bootstrap";
 import { useState } from 'react';
 import CadastroUsuario from "./CadastroUsuario";
+// import { useState } from "react";
 
 export default function Usuarios() {
 
@@ -8,6 +9,40 @@ export default function Usuarios() {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  // const [usuario, setUsuario] = useState({
+  //   nome: "",
+  //   cpf: "",
+  //   nascimento: "",
+  //   email: "",
+  //   status: "",
+  //   senha: ""
+  // });
+  // const [listaUsuarios, setListaUsuario] = useState([]);
+
+  // function salvarUsuario(e) {
+  //   e.preventDefault();
+
+  //   if (!usuario.nome.trim() || !usuario.cpf.trim() || !usuario.email.trim()) {
+  //     alert("Os campos nome, cpf e e-mail devem ser preenchidos.");
+  //     return;
+  //   }
+
+  //   setListaUsuario([...usuario, usuario]);
+
+  //   alert(`${usuario.nome} salvo com sucesso!`);
+
+  //   setUsuario({
+  //     nome: "",
+  //     cpf: "",
+  //     nascimento: "",
+  //     email: "",
+  //     status: "",
+  //     senha: ""
+  //   })
+
+  // }
+
 
   return (
     <Container className="mt-4">

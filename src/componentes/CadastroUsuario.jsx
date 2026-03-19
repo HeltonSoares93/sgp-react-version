@@ -3,9 +3,32 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { useState } from 'react';
 
-// Recebendo show e handleClose como propriedades (desestruturadas)
 export default function CadastroUsuario({ show, handleClose }) {
+
+  const [nome, setName] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [email, setEmail] = useState("");
+  const [nascimento, setNascimento] = useState("");
+  const [status, setStatus] = useState("");
+  const [senha, setSenha] = useState("");
+
+  const usuario = {
+    id: Date.now(),
+    nome: nome,
+    cpf: cpf,
+    email: email,
+    nascimento: nascimento,
+    status: status,
+    senha: senha
+  }
+
+  // const salvar = () => console.log(usuario);
+  function salvar() {
+    alert(`${usuario.nome} salvo com sucesso!`);
+    console.log(usuario);
+  }
 
   return (
     <Modal show={show} onHide={handleClose} size='lg'>
@@ -15,33 +38,33 @@ export default function CadastroUsuario({ show, handleClose }) {
 
       <Modal.Body>
         <Form>
-          {/* Conteudo do Formulário */}
 
+          {/* Conteudo do Formulário */}
           <Row className='mb-3'>
             <Form.Group>
               <Form.Label>Nome Completo</Form.Label>
-              <Form.Control type="text" placeholder="Digite seu nome aqui..." />
+              <Form.Control value={nome} onChange={(e) => setName(e.target.value)} type="text" placeholder="Digite seu nome aqui..." />
             </Form.Group>
           </Row>
           <Row className="mb-3">
             {/* Nome */}
             <Form.Group as={Col} xs="5" controlId="formGridEmail">
               <Form.Label>CPF</Form.Label>
-              <Form.Control type="text" placeholder="Digite seu nome aqui..." />
+              <Form.Control value={cpf} onChange={(e) => setCpf(e.target.value)} type="text" placeholder="Digite seu nome aqui..." />
             </Form.Group>
             <Form.Group as={Col} xs="5" controlId="formGridEmail">
               <Form.Label>Data Nascimento</Form.Label>
-              <Form.Control type="date" />
+              <Form.Control value={nascimento} onChange={(e) => setNascimento(e.target.value)} type="date" />
             </Form.Group>
           </Row>
           <Row className='mb-3'>
             <Form.Group as={Col} xs="5">
               <Form.Label>Email</Form.Label>
-              <Form.Control type="email" placeholder=" @email.com" />
+              <Form.Control value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder=" @email.com" />
             </Form.Group>
             <Form.Group as={Col} xs="5">
               <Form.Label>Status</Form.Label>
-              <Form.Select aria-label="Default select example">
+              <Form.Select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Default select example">
                 <option>Selecione</option>
                 <option value="1">Ativo</option>
                 <option value="2">Inativo</option>
@@ -51,11 +74,11 @@ export default function CadastroUsuario({ show, handleClose }) {
           <Row>
             <Form.Group as={Col} xs='5'>
               <Form.Label>Senha Temporária</Form.Label>
-              <Form.Control type="password" />
+              <Form.Control value={senha} onChange={(e) => setSenha(e.target.value)} type="password" />
             </Form.Group>
             <Form.Group as={Col} xs='5'>
               <Form.Label>Confirme a senha</Form.Label>
-              <Form.Control type="password" />
+              <Form.Control value={senha} onChange={(e) => setSenha(e.target.value)} type="password" />
             </Form.Group>
           </Row>
         </Form>
@@ -65,7 +88,7 @@ export default function CadastroUsuario({ show, handleClose }) {
         <Button variant="secondary" onClick={handleClose}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={handleClose}>
+        <Button variant="primary" onClick={salvar}>
           Salvar
         </Button>
       </Modal.Footer>
