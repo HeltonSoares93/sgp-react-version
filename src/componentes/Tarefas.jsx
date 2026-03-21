@@ -1,6 +1,6 @@
 import { Container, Card, Button, Col, Form, Row, Table } from "react-bootstrap";
 import CadastroTarefa from "./CadastroTarefa";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Tarefas() {
 
@@ -9,6 +9,27 @@ export default function Tarefas() {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const [tarefas, setTarefas] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/tarefas')
+      .then(resposta => {
+        if (!resposta.ok) {
+          throw new Error('Não foi possível buscar as tarefas no momento.');
+        };
+        return resposta.json();
+      })
+      .then(dados => {
+        setTarefas(dados);
+        setCarregando(false);
+      }).catch(erro => {
+        console.error("Erro na comunicação com a API: ", erro);
+        setCarregando(false);
+      })
+
+  }, [])
 
   return (
     <Container className="mt-4">
@@ -105,15 +126,17 @@ export default function Tarefas() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Configurar roteamento</td>
-                <td>Ajustar o React Router DOM para navegar entre Projetos e Tarefas.</td>
-                <td>14/03/2025</td>
-                <td>21/04/2026</td>
-                <td>Em Andamento</td>
-                <td>Helton Soares</td>
-              </tr>
+              {tarefas.map((tarefa) => (
+                <tr key={tarefa.id}>
+                  <td>{tarefa.id}</td>
+                  <td>{tarefa.titulo}</td>
+                  <td>{tarefa.descricao}</td>
+                  <td>{tarefa.dataInicio}</td>
+                  <td>{tarefa.dataConclusao}</td>
+                  <td>{tarefa.status}</td>
+                  <td>{tarefa.responsavel?.nome}</td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </Card.Body>

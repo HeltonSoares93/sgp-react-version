@@ -56,18 +56,18 @@ export default function CadastroProjeto({ show, handleClose }) {
               </Form.Text>
             </Form.Group>
           </Row>
-
+          {/* Data de início do projeto */}
           <Row className='mb-3 g-3'>
             <Form.Group as={Col} xs={12} md={4}>
               <Form.Label>Data de Início</Form.Label>
               <Form.Control value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} type="date" />
             </Form.Group>
-
+            {/* Data de conclusão do projeto */}
             <Form.Group as={Col} xs={12} md={4}>
               <Form.Label>Prazo Conclusão</Form.Label>
               <Form.Control value={dataConclusao} onChange={(e) => setDataConclusao(e.target.value)} type="date" />
             </Form.Group>
-
+            {/* Status do Projeto */}
             <Form.Group as={Col} xs={12} md={4}>
               <Form.Label>Status</Form.Label>
               <Form.Select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Selecione o status">

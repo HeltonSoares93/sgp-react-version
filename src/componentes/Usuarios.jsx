@@ -1,5 +1,5 @@
 import { Container, Card, Button, Col, Form, Row, Table } from "react-bootstrap";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CadastroUsuario from "./CadastroUsuario";
 // import { useState } from "react";
 
@@ -10,38 +10,25 @@ export default function Usuarios() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  // const [usuario, setUsuario] = useState({
-  //   nome: "",
-  //   cpf: "",
-  //   nascimento: "",
-  //   email: "",
-  //   status: "",
-  //   senha: ""
-  // });
-  // const [listaUsuarios, setListaUsuario] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [carregando, setCarregando] = useState(true);
 
-  // function salvarUsuario(e) {
-  //   e.preventDefault();
-
-  //   if (!usuario.nome.trim() || !usuario.cpf.trim() || !usuario.email.trim()) {
-  //     alert("Os campos nome, cpf e e-mail devem ser preenchidos.");
-  //     return;
-  //   }
-
-  //   setListaUsuario([...usuario, usuario]);
-
-  //   alert(`${usuario.nome} salvo com sucesso!`);
-
-  //   setUsuario({
-  //     nome: "",
-  //     cpf: "",
-  //     nascimento: "",
-  //     email: "",
-  //     status: "",
-  //     senha: ""
-  //   })
-
-  // }
+  useEffect(() => {
+    fetch('http://localhost:8080/usuarios')
+      .then(resposta => {
+        if (!resposta.ok) {
+          throw new Error('Não foi possível buscar os usuários no momento...')
+        };
+        return resposta.json(); // a "resposta" recebe o conteúdo do fetch
+      })
+      .then(dados => {
+        setUsuarios(dados);
+        setCarregando(false);
+      }).catch(erro => {
+        console.error("Erro na comunicação com a API: ", erro);
+        setCarregando(false);
+      });
+  }, []);
 
 
   return (
@@ -135,14 +122,16 @@ export default function Usuarios() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Helton</td>
-                <td>097.***.***-54</td>
-                <td>helton2009@gmail.com</td>
-                <td>04/02/1993</td>
-                <td>Ativo</td>
-              </tr>
+              {usuarios.map((usuario) => (
+                <tr key={usuario.id}>
+                  <td>{usuario.id}</td>
+                  <td>{usuario.nome}</td>
+                  <td>{usuario.cpf}</td>
+                  <td>{usuario.email}</td>
+                  <td>{usuario.nascimento}</td>
+                  <td>{usuario.status}</td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </Card.Body>

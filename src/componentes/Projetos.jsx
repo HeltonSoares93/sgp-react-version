@@ -1,6 +1,7 @@
 import { Container, Card, Button, Col, Form, Row, Table } from "react-bootstrap";
 import CadastroProjeto from "./CadastroProjeto";
 import { useState } from 'react';
+import { useEffect } from "react";
 
 export default function Projetos() {
 
@@ -9,6 +10,27 @@ export default function Projetos() {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const [projetos, setProjetos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/projetos')
+      .then(resposta => { // quando os dados chegarem, faça isso...
+        if (!resposta.ok) { // se a resposta não estiver ok, lançe um erro.
+          throw new Error('Não foi possível buscar os projetos no momento...');
+        }
+        return resposta.json();
+      })
+      .then(dados => { // quando os dados estiverem prontos, faça isso...
+        setProjetos(dados);
+        setCarregando(false)
+      })
+      .catch(erro => { // se algo der errado
+        console.error("Erro na comunicação com a API: ", erro);
+        setCarregando(false);
+      });
+  }, [])
 
   return (
     <Container className="mt-4">
@@ -54,7 +76,7 @@ export default function Projetos() {
                   </Col>
                   <Col xs={12} md={6} lg={3}>
                     <Form.Label>Responsável</Form.Label>
-                    <Form.Control placeholder="Apenas números" />
+                    <Form.Control placeholder="Quem é o responsável pelo projeto?" />
                   </Col>
                   <Col xs={12} md={6} lg={3}>
                     <Form.Label>Status</Form.Label>
@@ -105,15 +127,17 @@ export default function Projetos() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Frontend SGP</td>
-                <td>Sistema Gerenciamento de Projetos Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repellat maxime cum alias recusandae tempora tenetur reiciendis pariatur repellendus consequatur obcaecati consectetur nulla officia, delectus a commodi impedit suscipit vitae necessitatibus.</td>
-                <td>14/03/2025</td>
-                <td>21/04/2026</td>
-                <td>Ativo</td>
-                <td>Helton Soares</td>
-              </tr>
+              {projetos.map((projeto) => (
+                <tr key={projeto.id}>
+                  <td>{projeto.id}</td>
+                  <td>{projeto.titulo}</td>
+                  <td>{projeto.descricao}</td>
+                  <td>{projeto.dataInicio}</td>
+                  <td>{projeto.dataConclusao}</td>
+                  <td>{projeto.status}</td>
+                  <td>{projeto.responsavel.nome}</td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </Card.Body>
