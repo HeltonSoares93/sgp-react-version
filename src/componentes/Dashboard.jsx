@@ -6,8 +6,7 @@ export default function Dashboard() {
   const [projetos, setProjetos] = useState([]);
   const [tarefas, setTarefas] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+ 
 
   useEffect(() => {
     const carregarDados = async () => {
