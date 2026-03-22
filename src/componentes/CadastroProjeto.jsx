@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function CadastroProjeto({ show, handleClose }) {
 
@@ -14,19 +14,58 @@ export default function CadastroProjeto({ show, handleClose }) {
   const [status, setStatus] = useState("");
   const [responsavel, setResponsavel] = useState("");
 
+  const [usuarios, setUsuarios] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/usuarios')
+      .then(resposta => {
+        if (!resposta.ok) {
+          throw new Error('Não foi possível buscar os usuários no momento...')
+        };
+        return resposta.json(); // a "resposta" recebe o conteúdo do fetch
+      })
+      .then(dados => {
+        setUsuarios(dados);
+        setCarregando(false);
+      }).catch(erro => {
+        console.error("Erro na comunicação com a API: ", erro);
+        setCarregando(false);
+      });
+  }, [])
+
   const projeto = {
-    id: Date.now(),
     titulo: titulo,
     descricao: descricao,
     dataInicio: dataInicio,
     dataConclusao: dataConclusao,
     status: status,
-    responsavel: responsavel,
+    responsavel: {id:Number(responsavel)},
   }
 
-  function salvar() {
-    alert(`${projeto.titulo} salvo com sucesso!`);
-    console.log(projeto);
+  async function salvar() {
+    try {
+      const resposta = await fetch('http://localhost:8080/projetos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(projeto)
+      });
+
+      if (!resposta.ok) {
+        const erroData = await resposta.json().catch(() => ({}))
+        throw new Error('Erro ao cadastrar novo projeto.');
+      }
+
+      const dadosSalvos = await resposta.json();
+      alert(`${projeto.titulo} salvo com sucesso!`);
+      handleClose();
+
+    } catch (erro) {
+      console.log('Erro na comunicação com a API: ', erro);
+      alert('Não foi possível salvar o projeto, tente novamente');
+    }
   }
 
   return (
@@ -72,8 +111,8 @@ export default function CadastroProjeto({ show, handleClose }) {
               <Form.Label>Status</Form.Label>
               <Form.Select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Selecione o status">
                 <option>Selecione</option>
-                <option value="1">Ativo</option>
-                <option value="2">Inativo</option>
+                <option value="ATIVO">Ativo</option>
+                <option value="INATIVO">Inativo</option>
               </Form.Select>
             </Form.Group>
           </Row>
@@ -85,9 +124,9 @@ export default function CadastroProjeto({ show, handleClose }) {
               <Form.Label>Responsável</Form.Label>
               <Form.Select value={responsavel} onChange={(e) => setResponsavel(e.target.value)} aria-label="Selecione o responsável">
                 <option>Selecione</option>
-                <option value="1">Helton</option>
-                <option value="2">Soares</option>
-                <option value="3">Lima</option>
+                {usuarios.map((usuario) => (
+                  <option key={usuario.id} value={usuario.id}>{usuario.nome}</option>
+                ))}
               </Form.Select>
             </Form.Group>
           </Row>

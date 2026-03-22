@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { use, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function CadastroTarefa({ show, handleClose }) {
 
@@ -16,19 +16,75 @@ export default function CadastroTarefa({ show, handleClose }) {
   const [projeto, setProjeto] = useState("");
 
   const tarefa = {
-    id: Date.now(),
     titulo: titulo,
     descricao: descricao,
     dataInicio: dataInicio,
     dataConclusao: dataConclusao,
     status: status,
-    responsavel: responsavel,
-    projeto: projeto
+    responsavel: { id: Number(responsavel) },
+    projeto: { id: Number(projeto) }
   }
 
-  function salvar() {
-    alert(`${tarefa.titulo} salvo com sucesso!`);
-    console.log(tarefa);
+  const [usuarios, setUsuarios] = useState([]);
+  const [projetos, setProjetos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/usuarios')
+      .then(resposta => {
+        if (!resposta.ok) {
+          throw new Error('Não foi possível buscar os usuários no momento...')
+        };
+        return resposta.json(); // a "resposta" recebe o conteúdo do fetch
+      })
+      .then(dados => {
+        setUsuarios(dados);
+        setCarregando(false);
+      }).catch(erro => {
+        console.error("Erro na comunicação com a API: ", erro);
+        setCarregando(false);
+      });
+  }, [])
+
+  useEffect(() => {
+    fetch('http://localhost:8080/projetos')
+      .then(resposta => {
+        if (!resposta.ok) {
+          throw new Error('Não foi possível buscar os projetos no momento...')
+        };
+        return resposta.json(); // a "resposta" recebe o conteúdo do fetch
+      })
+      .then(dados => {
+        setProjetos(dados);
+        setCarregando(false);
+      }).catch(erro => {
+        console.error("Erro na comunicação com a API: ", erro);
+        setCarregando(false);
+      });
+  }, [])
+
+  async function salvar() {
+    try {
+      const resposta = await fetch('http://localhost:8080/tarefas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(tarefa)
+      });
+
+      if (!resposta.ok) {
+        const erroData = await resposta.json().catch(() => ({}))
+        throw new Error('Erro ao cadastrar nova tarefa.');
+      }
+
+      const dadosSalvos = await resposta.json();
+      alert(`${tarefa.titulo} salvo com sucesso!`);
+      handleClose();
+    } catch (erro) {
+      console.log('Erro na comunicação com a API: ', erro);
+      alert('Não foi possível salvar a tarefa, tente novamente');
+    }
   }
 
 
@@ -41,7 +97,7 @@ export default function CadastroTarefa({ show, handleClose }) {
 
       <Modal.Body>
         <Form>
-          {/* Título do projeto */}
+          {/* Título do tarefa */}
           <Row className='mb-3'>
             <Form.Group as={Col} xs={12}>
               <Form.Label>Título</Form.Label>
@@ -49,7 +105,7 @@ export default function CadastroTarefa({ show, handleClose }) {
             </Form.Group>
           </Row>
 
-          {/* Descrição do projeto */}
+          {/* Descrição da tarefa */}
           <Row className="mb-3">
             <Form.Group as={Col} xs={12} controlId="formGridDescricao">
               <Form.Label>Descrição</Form.Label>
@@ -75,11 +131,11 @@ export default function CadastroTarefa({ show, handleClose }) {
               <Form.Label>Status</Form.Label>
               <Form.Select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Selecione o status">
                 <option>Selecione</option>
-                <option value="1">Em Andamento</option>
-                <option value="2">Concluído</option>
-                <option value="2">Suspenso</option>
-                <option value="2">Cancelado</option>
-                <option value="2">Pendente</option>
+                <option value="EM_ANDAMENTO">Em Andamento</option>
+                <option value="CONCLUIDO">Concluído</option>
+                <option value="SUSPENSO">Suspenso</option>
+                <option value="CANCELADO">Cancelado</option>
+                <option value="PENDENTE">Pendente</option>
               </Form.Select>
             </Form.Group>
           </Row>
@@ -91,18 +147,18 @@ export default function CadastroTarefa({ show, handleClose }) {
               <Form.Label>Responsável</Form.Label>
               <Form.Select value={responsavel} onChange={(e) => setResponsavel(e.target.value)} aria-label="Selecione o responsável">
                 <option>Selecione</option>
-                <option value="1">Helton</option>
-                <option value="2">Soares</option>
-                <option value="3">Lima</option>
+                {usuarios.map((usuario) => (
+                  <option key={usuario.id} value={usuario.id}>{usuario.nome}</option>
+                ))}
               </Form.Select>
             </Form.Group>
             <Form.Group as={Col} xs={12} md={5}>
               <Form.Label>Atribuir Projeto</Form.Label>
-              <Form.Select value={projeto} onChange={(e) => setProjeto(e.target.value)} aria-label="Selecione o responsável">
+              <Form.Select value={projeto} onChange={(e) => setProjeto(e.target.value)} aria-label="Atrelar a projeto">
                 <option>Selecione</option>
-                <option value="1">Frontend SGP Fullstack</option>
-                <option value="2">Banco de Dados do Marktplace</option>
-                <option value="3">CRM de Vendas</option>
+                {projetos.map((projeto) => (
+                  <option key={projeto.id} value={projeto.id}>{projeto.titulo}</option>
+                ))}
               </Form.Select>
             </Form.Group>
           </Row>

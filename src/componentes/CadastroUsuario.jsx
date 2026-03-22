@@ -13,9 +13,9 @@ export default function CadastroUsuario({ show, handleClose }) {
   const [nascimento, setNascimento] = useState("");
   const [status, setStatus] = useState("");
   const [senha, setSenha] = useState("");
+  const [confirmarsenha, setConfirmarSenha] = useState("");
 
   const usuario = {
-    id: Date.now(),
     nome: nome,
     cpf: cpf,
     email: email,
@@ -25,9 +25,28 @@ export default function CadastroUsuario({ show, handleClose }) {
   }
 
   // const salvar = () => console.log(usuario);
-  function salvar() {
-    alert(`${usuario.nome} salvo com sucesso!`);
-    console.log(usuario);
+  async function salvar() {
+    try {
+    const resposta = await fetch('http://localhost:8080/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(usuario)
+      });
+
+      if (!resposta.ok) {
+        const erroData = await resposta.json().catch(() => ({}))
+        throw new Error('Erro ao cadastrar novo usuário.');
+      }
+
+      const dadosSalvos = await resposta.json();
+      alert(`${dadosSalvos.nome} salvo com sucesso.`);
+      handleClose();
+    } catch (erro) {
+      console.log('Erro na comunicação com a API: ', erro);
+      alert('Não foi possível salvar o usuário, tente novamente');
+    }
   }
 
   return (
@@ -66,8 +85,8 @@ export default function CadastroUsuario({ show, handleClose }) {
               <Form.Label>Status</Form.Label>
               <Form.Select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Default select example">
                 <option>Selecione</option>
-                <option value="1">Ativo</option>
-                <option value="2">Inativo</option>
+                <option value="ATIVO">Ativo</option>
+                <option value="INATIVO">Inativo</option>
               </Form.Select>
             </Form.Group>
           </Row>
@@ -78,7 +97,7 @@ export default function CadastroUsuario({ show, handleClose }) {
             </Form.Group>
             <Form.Group as={Col} xs='5'>
               <Form.Label>Confirme a senha</Form.Label>
-              <Form.Control value={senha} onChange={(e) => setSenha(e.target.value)} type="password" />
+              <Form.Control value={confirmarsenha} onChange={(e) => setConfirmarSenha(e.target.value)} type="password" />
             </Form.Group>
           </Row>
         </Form>
