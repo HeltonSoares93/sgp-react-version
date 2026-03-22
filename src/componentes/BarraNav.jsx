@@ -17,7 +17,7 @@ export default function BarraNav() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto gap-4 align-items-center">
-            <Nav.Link as={Link} to="/paginainicial"><span><svg xmlns="
+            <Nav.Link as={Link} to="/dashboard"><span><svg xmlns="
               http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
               class="bi bi-file-earmark-bar-graph" viewBox="0 0 16 16">
               <path
