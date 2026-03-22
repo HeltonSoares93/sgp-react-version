@@ -125,6 +125,14 @@ export default function Dashboard() {
                       </Card.Body>
                     </Card>
                   </Col>
+                  <Col xs={12} md={6} lg={3}>
+                    <Card className="shadow-sm border-0 border-start border-4 border-primary h-100">
+                      <Card.Header className="text-muted text-uppercase fw-bold mb-2">FINALIZADO</Card.Header>
+                      <Card.Body className="mb-3">
+                        <h3 className="mb-0 fw-bold text-dark">{totalTarefaConcluido}</h3>
+                      </Card.Body>
+                    </Card>
+                  </Col>
 
                   <Col xs={12} md={6} lg={3}>
                     <Card className="shadow-sm border-0 border-start border-4 border-primary h-100">
