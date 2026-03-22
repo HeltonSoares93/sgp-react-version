@@ -113,6 +113,8 @@ export default function CadastroProjeto({ show, handleClose }) {
                 <option>Selecione</option>
                 <option value="ATIVO">Ativo</option>
                 <option value="INATIVO">Inativo</option>
+                <option value="CANCELADO">Cancelado</option>
+                <option value="SUSPENSO">Suspenso</option>
               </Form.Select>
             </Form.Group>
           </Row>
