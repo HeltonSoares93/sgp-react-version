@@ -1,1 +1,9 @@
-// AINDA EM DESENVOLVIMENTO !!!!
+
+
+export default function DeletarUsuario() {
+
+  return (
+    <>
+    </>
+  )
+}

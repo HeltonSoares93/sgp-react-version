@@ -1,7 +1,7 @@
 import { Container, Card, Button, Col, Form, Row, Table } from "react-bootstrap";
 import { useEffect, useState } from 'react';
 import CadastroUsuario from "./CadastroUsuario";
-// import { useState } from "react";
+import axios from "axios";
 
 export default function Usuarios() {
 
@@ -12,7 +12,24 @@ export default function Usuarios() {
 
   const [usuarios, setUsuarios] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  
+  // função para deletar usuário por Id
+  const deletarUsuario = async (id) => {
+    const confirmar = window.confirm(`Tem certeza que deseja excluir o usuário ${id}?`);
 
+    if (confirmar) {
+      try {
+        await axios.delete(`http://localhost:8080/usuarios/${id}`);
+        setUsuarios(usuarios.filter((u) => u.id !== id));
+        alert("Usuário deletado com sucesso!");
+      } catch (erro) {
+        console.error("Erro na comunicação com a API: ", erro);
+        alert("Erro ao tentar excluir o usuário. Verifique o console.");
+      }
+    }
+  }
+
+  // função para buscar todos os usuários na api
   useEffect(() => {
     fetch('http://localhost:8080/usuarios')
       .then(resposta => {
@@ -141,7 +158,7 @@ export default function Usuarios() {
                           <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
                         </svg>
                       </Button>
-                      <Button variant="danger" size="sm" title="Excluir Usuário">
+                      <Button onClick={()=>{deletarUsuario(usuario.id)}} variant="danger" size="sm" title="Excluir Usuário">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                           <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
                           <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />

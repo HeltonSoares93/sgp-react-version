@@ -1,0 +1,19 @@
+const deletarUsuario = async (id) => {
+    const confirmar = window.confirm("Tem certeza que deseja excluir este usuário?");
+    
+    if (confirmar) {
+      try {
+        // O Axios faz a requisição DELETE de forma mais direta
+        await axios.delete(`http://localhost:8080/usuarios/${id}`);
+
+        // Se a linha acima não lançou erro, significa que o delete (status 200/204) funcionou.
+        // Então atualizamos o estado local para remover o usuário da tela:
+        setUsuarios(usuarios.filter((usuario) => usuario.id !== id));
+        console.log("Usuário deletado com sucesso.");
+
+      } catch (erro) {
+        console.error("Erro na comunicação com a API: ", erro);
+        alert("Erro ao tentar excluir o usuário. Verifique o console.");
+      }
+    }
+  };
