@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Arquivos de Relatório do Assistente de Código
+relatorio_*.md
+*.txt
