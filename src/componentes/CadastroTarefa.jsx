@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useEffect, useState } from 'react';
 
-export default function CadastroTarefa({ show, handleClose }) {
+export default function CadastroTarefa({ show, handleClose, dadosTarefa, buscarTarefas }) {
 
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -28,6 +28,27 @@ export default function CadastroTarefa({ show, handleClose }) {
   const [usuarios, setUsuarios] = useState([]);
   const [projetos, setProjetos] = useState([]);
   const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    if (dadosTarefa && dadosTarefa.id) {
+      setTitulo(dadosTarefa.titulo || "");
+      setDescricao(dadosTarefa.descricao || "");
+      setDataInicio(dadosTarefa.dataInicio || "");
+      setDataConclusao(dadosTarefa.dataConclusao || "");
+      setStatus(dadosTarefa.status || "");
+      // Coletamos apenas os IDs dos campos de objeto para não dar problemas no layout do HTML Select
+      setResponsavel(dadosTarefa.responsavel?.id || "");
+      setProjeto(dadosTarefa.projeto?.id || "");
+    } else {
+      setTitulo("");
+      setDescricao("");
+      setDataInicio("");
+      setDataConclusao("");
+      setStatus("");
+      setResponsavel("");
+      setProjeto("");
+    }
+  }, [dadosTarefa, show])
 
   useEffect(() => {
     fetch('http://localhost:8080/usuarios')
@@ -64,9 +85,14 @@ export default function CadastroTarefa({ show, handleClose }) {
   }, [])
 
   async function salvar() {
+    // Define o ID atual e ajusta o método HTTP (PUT/POST) dinamicamente.
+    const id = dadosTarefa?.id;
+    const metodo = id ? 'PUT' : 'POST';
+    const url = id ? `http://localhost:8080/tarefas/${id}` : 'http://localhost:8080/tarefas';
+
     try {
-      const resposta = await fetch('http://localhost:8080/tarefas', {
-        method: 'POST',
+      const resposta = await fetch(url, {
+        method: metodo,
         headers: {
           'Content-Type': 'application/json'
         },
@@ -81,6 +107,11 @@ export default function CadastroTarefa({ show, handleClose }) {
       const dadosSalvos = await resposta.json();
       alert(`${tarefa.titulo} salvo com sucesso!`);
       handleClose();
+
+      // Chamamos a função buscarTarefas enviada do componente Pai.
+      if (buscarTarefas) {
+        buscarTarefas();
+      }
     } catch (erro) {
       console.log('Erro na comunicação com a API: ', erro);
       alert('Não foi possível salvar a tarefa, tente novamente');

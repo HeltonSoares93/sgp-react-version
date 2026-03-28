@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useEffect, useState } from 'react';
 
-export default function CadastroProjeto({ show, handleClose }) {
+export default function CadastroProjeto({ show, handleClose, dadosProjeto, buscarProjetos }) {
 
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -16,6 +16,24 @@ export default function CadastroProjeto({ show, handleClose }) {
 
   const [usuarios, setUsuarios] = useState([]);
   const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    if (dadosProjeto && dadosProjeto.id) {
+      setTitulo(dadosProjeto.titulo || "");
+      setDescricao(dadosProjeto.descricao || "");
+      setDataInicio(dadosProjeto.dataInicio || "");
+      setDataConclusao(dadosProjeto.dataConclusao || "");
+      setStatus(dadosProjeto.status || "");
+      setResponsavel(dadosProjeto.responsavel?.id || "");
+    } else {
+      setTitulo("");
+      setDescricao("");
+      setDataInicio("");
+      setDataConclusao("");
+      setStatus("");
+      setResponsavel("");
+    }
+  }, [dadosProjeto, show])
 
   useEffect(() => {
     fetch('http://localhost:8080/usuarios')
@@ -44,9 +62,13 @@ export default function CadastroProjeto({ show, handleClose }) {
   }
 
   async function salvar() {
+    const id = dadosProjeto?.id;
+    const metodo = id ? 'PUT' : 'POST';
+    const url = id ? `http://localhost:8080/projetos/${id}` : 'http://localhost:8080/projetos';
+
     try {
-      const resposta = await fetch('http://localhost:8080/projetos', {
-        method: 'POST',
+      const resposta = await fetch(url, {
+        method: metodo,
         headers: {
           'Content-Type': 'application/json'
         },
@@ -62,6 +84,9 @@ export default function CadastroProjeto({ show, handleClose }) {
       alert(`${projeto.titulo} salvo com sucesso!`);
       handleClose();
 
+      if (buscarProjetos) {
+        buscarProjetos();
+      }
     } catch (erro) {
       console.log('Erro na comunicação com a API: ', erro);
       alert('Não foi possível salvar o projeto, tente novamente');
@@ -72,7 +97,7 @@ export default function CadastroProjeto({ show, handleClose }) {
 
     <Modal show={show} onHide={handleClose} size='lg' fullscreen="sm-down">
       <Modal.Header closeButton>
-        <Modal.Title>Cadastrar Novo Projeto</Modal.Title>
+        <Modal.Title>{dadosProjeto?.id ? "Atualizar Projeto" : "Cadastrar Novo Projeto"}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>

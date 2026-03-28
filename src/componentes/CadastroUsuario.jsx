@@ -3,9 +3,9 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export default function CadastroUsuario({ show, handleClose }) {
+export default function CadastroUsuario({ show, handleClose, dadosUsuario, buscarUsuarios }) {
 
   const [nome, setName] = useState("");
   const [cpf, setCpf] = useState("");
@@ -24,11 +24,34 @@ export default function CadastroUsuario({ show, handleClose }) {
     senha: senha
   }
 
+  useEffect(() => {
+    if (dadosUsuario && dadosUsuario.id) {
+      setName(dadosUsuario.nome || "");
+      setCpf(dadosUsuario.cpf || "");
+      setEmail(dadosUsuario.email || "");
+      setNascimento(dadosUsuario.nascimento || "");
+      setStatus(dadosUsuario.status || "");
+    } else {
+      setName("");
+      setCpf("");
+      setEmail("");
+      setNascimento("");
+      setStatus("");
+      setSenha("");
+    }
+  }, [dadosUsuario, show]);
+
+
   // const salvar = () => console.log(usuario);
   async function salvar() {
+
+    const id = dadosUsuario?.id;
+    const metodo = id ? 'PUT' : 'POST';
+    const url = id ? `http://localhost:8080/usuarios/${id}` : 'http://localhost:8080/usuarios';
+    
     try {
-    const resposta = await fetch('http://localhost:8080/usuarios', {
-        method: 'POST',
+      const resposta = await fetch(url, {
+        method: metodo,
         headers: {
           'Content-Type': 'application/json'
         },
@@ -43,6 +66,9 @@ export default function CadastroUsuario({ show, handleClose }) {
       const dadosSalvos = await resposta.json();
       alert(`${dadosSalvos.nome} salvo com sucesso.`);
       handleClose();
+      if (buscarUsuarios) {
+        buscarUsuarios();
+      }
     } catch (erro) {
       console.log('Erro na comunicação com a API: ', erro);
       alert('Não foi possível salvar o usuário, tente novamente');
@@ -52,7 +78,7 @@ export default function CadastroUsuario({ show, handleClose }) {
   return (
     <Modal show={show} onHide={handleClose} size='lg'>
       <Modal.Header closeButton>
-        <Modal.Title>Cadastrar Novo Usuário</Modal.Title>
+        <Modal.Title>{dadosUsuario?.id ? "Atualizar Usuário" : "Cadastrar Novo Usuário"}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
